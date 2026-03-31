@@ -34,9 +34,8 @@ This is not a mock. The invoice goes through the actual Peppol infrastructure.
 ## Project Structure
 
 ```
-lib/peppr.ts                       — SDK client (3 lines)
+lib/peppr.ts                       — SDK client
 app/api/send-invoice/route.ts      — Send endpoint
-app/api/webhooks/route.ts          — Webhook handler
 app/page.tsx                       — UI
 ```
 

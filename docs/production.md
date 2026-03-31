@@ -21,17 +21,7 @@ The starter sends a hardcoded demo invoice. Replace the invoice payload in `app/
 - `number` — your invoice numbering scheme
 - `dueDate` — your payment terms
 
-## 3. Set up webhooks
-
-Configure your webhook URL in the [getpeppr console](https://console.getpeppr.dev) under **Webhooks**:
-
-```
-https://yourdomain.com/api/webhooks
-```
-
-The starter includes a webhook handler at `app/api/webhooks/route.ts` that verifies signatures and logs events. Extend it with your business logic.
-
-## 4. Monitor errors
+## 3. Monitor errors
 
 We recommend [Sentry](https://sentry.io) for error tracking. Add the Next.js SDK:
 
