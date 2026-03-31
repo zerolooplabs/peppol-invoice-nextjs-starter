@@ -33,7 +33,7 @@ This is not a mock. The invoice goes through the actual Peppol infrastructure.
 
 ## Webhooks (Optional)
 
-Get notified when your invoice status changes (sent, accepted, refused, error):
+Get notified when your invoice status changes (sent, accepted, refused, error, received, paid):
 
 1. Go to **Webhooks** in the [getpeppr Console](https://console.getpeppr.dev/webhooks)
 2. Add your endpoint URL: `https://your-app.com/api/webhooks`
