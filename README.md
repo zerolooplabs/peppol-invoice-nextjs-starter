@@ -2,7 +2,7 @@
 
 Send your first Peppol e-invoice in under 2 minutes.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fzerolooplabs%2Fpeppol-invoice-nextjs-starter&env=GETPEPPR_API_KEY,GETPEPPR_WEBHOOK_SECRET&envDescription=Get%20your%20sandbox%20API%20key%20and%20webhook%20secret%20at%20console.getpeppr.dev&project-name=peppol-invoice-starter)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fzerolooplabs%2Fpeppol-invoice-nextjs-starter&env=GETPEPPR_API_KEY&envDescription=Get%20your%20sandbox%20API%20key%20at%20console.getpeppr.dev&project-name=peppol-invoice-starter)
 
 ## Prerequisites
 

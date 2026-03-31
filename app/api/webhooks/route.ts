@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Peppol } from "@getpeppr/sdk";
+import { webhooks } from "@getpeppr/sdk";
 
 /**
  * Webhook handler for getpeppr invoice events.
@@ -8,12 +8,12 @@ import { Peppol } from "@getpeppr/sdk";
  *   URL: https://your-app.com/api/webhooks
  *
  * Events you'll receive:
- *   - invoice.sent      — Invoice accepted for Peppol delivery
- *   - invoice.accepted  — Recipient acknowledged receipt
- *   - invoice.refused   — Recipient refused the invoice
- *   - invoice.error     — Delivery error
+ *   - invoice.sent       — Invoice accepted for Peppol delivery
+ *   - invoice.accepted   — Recipient acknowledged receipt
+ *   - invoice.refused    — Recipient refused the invoice
+ *   - invoice.error      — Delivery error
  *   - invoice.registered — Registered with tax authority
- *   - test.ping         — Manual test from the dashboard
+ *   - test.ping          — Manual test from the dashboard
  */
 export async function POST(request: NextRequest) {
   const secret = process.env.GETPEPPR_WEBHOOK_SECRET;
@@ -33,17 +33,16 @@ export async function POST(request: NextRequest) {
   // 2. Verify signature using the SDK
   let event;
   try {
-    event = await Peppol.webhooks.constructEvent(rawBody, signature, secret);
+    event = await webhooks.constructEvent(rawBody, signature, secret);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Verification failed";
-    console.error("[webhook] Signature verification failed:", message);
-    return NextResponse.json({ error: message }, { status: 401 });
+    console.error("[webhook] Signature verification failed:", err instanceof Error ? err.message : "Unknown");
+    return NextResponse.json({ error: "Webhook verification failed" }, { status: 401 });
   }
 
   // 3. Handle the event
   console.log(`[webhook] Received ${event.type}`, event.data);
 
-  switch (event.type) {
+  switch (event.type as string) {
     case "invoice.sent":
       // Invoice has been accepted by the Peppol network for delivery
       // TODO: Update your database, notify the user, etc.
@@ -62,6 +61,10 @@ export async function POST(request: NextRequest) {
     case "invoice.error":
       // Delivery failed — check event.data for error details
       // TODO: Retry or alert the user
+      break;
+
+    case "invoice.registered":
+      // Registered with tax authority (where applicable)
       break;
 
     case "test.ping":
