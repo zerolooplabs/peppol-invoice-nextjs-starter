@@ -1,5 +1,7 @@
 import { Peppol } from "@getpeppr/sdk";
 
+// Module-level singleton — safe in Node.js runtime (default).
+// Do not use with Edge Runtime (export const runtime = "edge") — instantiate per-request instead.
 let _peppol: Peppol | null = null;
 
 export function getPeppol() {
