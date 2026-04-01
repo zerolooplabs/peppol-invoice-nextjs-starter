@@ -28,11 +28,14 @@ The demo `/api/send-invoice` route has **no authentication**. Anyone who discove
 Before going live, add authentication:
 
 ```ts
-import { getServerSession } from "next-auth"; // or Clerk, Supabase Auth, etc.
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession();
-  if (!session) {
+  // Verify the user is authenticated (adapt to your auth provider)
+  // Examples: NextAuth getServerSession(authOptions), Clerk auth(),
+  //           Supabase createClient().auth.getUser(), or a custom JWT check
+  const user = await getAuthenticatedUser(request);
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -49,7 +52,10 @@ When you modify the send route to accept dynamic invoice data from the request b
 ```ts
 import { z } from "zod";
 
+// Add number, dueDate, currency, and any other fields your app needs
 const InvoiceSchema = z.object({
+  number: z.string().min(1),
+  dueDate: z.string().date(),
   to: z.object({
     name: z.string().min(1),
     peppolId: z.string().regex(/^\d{4}:.+$/),
@@ -67,8 +73,15 @@ const InvoiceSchema = z.object({
   buyerReference: z.string().optional(),
 });
 
-const body = InvoiceSchema.parse(await request.json());
-const result = await peppol.invoices.send(body);
+// safeParse returns { success, data, error } instead of throwing
+const parsed = InvoiceSchema.safeParse(await request.json());
+if (!parsed.success) {
+  return NextResponse.json(
+    { error: "Invalid input", details: parsed.error.flatten() },
+    { status: 400 },
+  );
+}
+const result = await peppol.invoices.send(parsed.data);
 ```
 
 Never pass raw `request.json()` directly to the SDK without validation.
