@@ -36,7 +36,8 @@ export async function POST() {
           description: "Platform subscription — Monthly",
           quantity: 1,
           unitPrice: 99.0,
-          vatRate: 21,
+          vatRate: 0,
+          vatCategory: "O", // outside_scope — works without VAT registration on sender
         },
       ],
       buyerReference: "DEMO",
