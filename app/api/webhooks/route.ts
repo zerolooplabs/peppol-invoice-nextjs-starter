@@ -8,20 +8,26 @@ import { webhooks } from "@getpeppr/sdk";
  *   URL: https://your-app.com/api/webhooks
  *
  * Events you'll receive:
- *   - invoice.sent       — Invoice delivered to the Peppol network
- *   - invoice.accepted   — Accepted by the recipient
- *   - invoice.refused    — Rejected by the recipient
- *   - invoice.error      — Delivery failed
- *   - invoice.registered — Cleared by tax authority
- *   - invoice.received   — Receipt acknowledged by recipient
- *   - invoice.paid       — Payment confirmed by recipient
- *   - test.ping          — Manual test from the dashboard
+ *   - invoice.sent                — Invoice delivered to the Peppol network
+ *   - invoice.accepted            — Accepted by the recipient
+ *   - invoice.refused             — Rejected by the recipient
+ *   - invoice.error               — Delivery failed
+ *   - invoice.registered          — Cleared by tax authority
+ *   - invoice.received            — Receipt acknowledged by recipient
+ *   - invoice.paid                — Payment confirmed by recipient
+ *   - invoice.closed              — Invoice lifecycle complete
+ *   - creditnote.sent             — Credit note delivered to the Peppol network
+ *   - creditnote.received         — Incoming credit note acknowledged
+ *   - test.ping                   — Manual test from the dashboard
  */
 export async function POST(request: NextRequest) {
   const secret = process.env.GETPEPPR_WEBHOOK_SECRET;
   if (!secret) {
     console.error("[webhook] GETPEPPR_WEBHOOK_SECRET is not set");
-    return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Webhook endpoint not configured" },
+      { status: 503 },
+    );
   }
 
   // 1. Read the raw body (must be string, not parsed JSON)
@@ -37,14 +43,20 @@ export async function POST(request: NextRequest) {
   try {
     event = await webhooks.constructEvent(rawBody, signature, secret);
   } catch (err) {
-    console.error("[webhook] Signature verification failed:", err instanceof Error ? err.message : "Unknown");
-    return NextResponse.json({ error: "Webhook verification failed" }, { status: 401 });
+    console.error(
+      "[webhook] Signature verification failed:",
+      err instanceof Error ? err.message : "Unknown",
+    );
+    return NextResponse.json(
+      { error: "Webhook verification failed" },
+      { status: 401 },
+    );
   }
 
-  // 3. Handle the event
-  console.log(`[webhook] Received ${event.type}`, event.data);
+  // 3. Handle the event (log type only — avoid logging full payload with PII)
+  console.log(`[webhook] Received ${event.type}`);
 
-  switch (event.type as string) {
+  switch (event.type) {
     case "invoice.sent":
       // Invoice has been accepted by the Peppol network for delivery
       // TODO: Update your database, notify the user, etc.
@@ -77,6 +89,20 @@ export async function POST(request: NextRequest) {
     case "invoice.paid":
       // Recipient confirmed payment
       // TODO: Mark invoice as paid in your system
+      break;
+
+    case "invoice.closed":
+      // Invoice lifecycle complete — no further events expected
+      break;
+
+    case "creditnote.sent":
+      // Credit note delivered to the Peppol network
+      // TODO: Update credit note status in your system
+      break;
+
+    case "creditnote.received":
+      // Incoming credit note acknowledged
+      // TODO: Process received credit note
       break;
 
     case "test.ping":
