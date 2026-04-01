@@ -25,11 +25,11 @@ export async function POST() {
         .split("T")[0],
       to: {
         name: "Acme Corp",
-        peppolId: "de:lwid:10101010-STO-10",
-        street: "Musterstraße 1",
-        city: "Berlin",
-        postalCode: "10115",
-        country: "DE",
+        peppolId: "9925:BE0314595348",
+        street: "Bd du Roi Albert II 16",
+        city: "Brussels",
+        postalCode: "1000",
+        country: "BE",
       },
       lines: [
         {
